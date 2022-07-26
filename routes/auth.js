@@ -20,7 +20,7 @@ router.post("/register", async (req, res) => {
           "emailPattern": 1
         }
       }
-      res.status(500).json(err);
+      res.status(400).json(err);
     }
     
     const newUser = new User(

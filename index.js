@@ -92,11 +92,11 @@ app.post("/api/upload", upload.single("file"),async (req, res) => {
       res.status(200).json(result)
     }
     else{
-      res.status(400).json("File Not Uploaded")
+      res.status(500).json("File Not Uploaded")
     }
   }
   catch(error){
-    res.status(400).json(error)
+    res.status(500).json(error)
   }
 });
 
@@ -114,19 +114,19 @@ app.delete("/api/file-delete",async(req,res)=>{
             res.status(200).json(result);
           })
           .catch(error=>{
-            res.status(400).json(error);
+            res.status(500).json(error);
           })
       } 
       catch (err) {
-        res.status(501).json(err);
+        res.status(500).json(err);
       }
     } 
     else {
-      res.status(401).json("No link sent");
+      res.status(400).json("No link sent");
     }
   }
   catch(err){
-    res.status(503).json(err);
+    res.status(500).json(err);
   }
 })
 
