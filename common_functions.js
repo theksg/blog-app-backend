@@ -15,5 +15,15 @@ module.exports ={
       '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
       '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
     return !!pattern.test(str);
+  },
+
+  getErrorMessage : function (error_type){
+    const err={
+      "index": 0,
+      "code": 11000,
+      "keyPattern": {}
+    }
+    err.keyPattern[error_type]=1;
+    return err;
   }
 }

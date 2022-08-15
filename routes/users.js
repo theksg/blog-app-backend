@@ -18,35 +18,17 @@ router.put("/:id", async (req, res) => {
       }
   
       if(req.body.facebook!="" && !common_functions.validURL(req.body.facebook)){
-        const err={
-          "index": 0,
-          "code": 11000,
-          "keyPattern": {
-            "facebook": 1
-          }
-        }
+        const err=common_functions.getErrorMessage("facebook");
         throw err;
       }
 
       if(req.body.linkedin!="" && !common_functions.validURL(req.body.linkedin)){
-        const err={
-          "index": 0,
-          "code": 11000,
-          "keyPattern": {
-            "linkedin": 1
-          }
-        }
+        const err=common_functions.getErrorMessage("linkedin");
         throw err;
       }
   
       if(common_functions.validateEmail(req.body.email)==null){
-        const err={
-          "index": 0,
-          "code": 11000,
-          "keyPattern": {
-            "emailPattern": 1
-          }
-        }
+        const err=common_functions.getErrorMessage("emailPattern");
         throw err;
       }
       const user = await User.findById(req.params.id);
