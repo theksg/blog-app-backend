@@ -70,20 +70,11 @@ async function uploadToCloudinary(locaFilePath ,height) {
       });
 }
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "images");
-  },
-  filename: (req, file, cb) => {
-    cb(null, req.body.name);
-  },
-});
 
-const upload = multer({ storage: storage });
 
-app.post("/api/upload", upload.single("file"),async (req, res) => {
+app.post("/api/upload", async (req, res) => {
   try{
-    var locaFilePath = req.file.path;
+    var locaFilePath = req.body.path;
     var height = req.body.height;
     var result = await uploadToCloudinary(locaFilePath , height);
     console.log(result)

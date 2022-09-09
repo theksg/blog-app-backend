@@ -4,11 +4,42 @@ const axios=require('axios');
 const dotenv = require("dotenv");
 dotenv.config();
 
+const multer=require("multer");
+const fs = require('fs-extra');
+
+if (!fs.existsSync("./images")) {
+  fs.mkdirSync("./images");
+}
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "images");
+  },
+  filename: (req, file, cb) => {
+    cb(null, req.body.name);
+  },
+});
+
+const upload = multer({ storage: storage });
+
 
 //CREATE POST
-router.post("/", async (req, res) => {
-  const newPost = new Post(req.body);
+router.post("/", upload.single("file"),async (req, res) => {
   try {
+  if(req.body.height){
+    try{
+      const fileInfo = req.file;
+      fileInfo.height = req.body.height;
+      const res=await axios.post(`http://localhost:${process.env.PORT}/api/upload`,fileInfo);
+      req.body.photo=res.data.url;
+    }
+    catch(err){
+      console.log(err);
+      console.log("Error in uploading image");
+    }
+  }
+    req.body.categories=JSON.parse(req.body.categories);
+    const newPost = new Post(req.body);
     const savedPost = await newPost.save();
     res.status(200).json(savedPost);
   } catch (err) {
@@ -17,11 +48,24 @@ router.post("/", async (req, res) => {
 });
 
 //UPDATE POST
-router.put("/:id", async (req, res) => {
+router.put("/:id",upload.single("file"), async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
     if (post.username === req.body.username) {
       try {
+        if(req.body.height){
+          try{
+            const fileInfo = req.file;
+            fileInfo.height = req.body.height;
+            const res=await axios.post(`http://localhost:${process.env.PORT}/api/upload`,fileInfo);
+            req.body.photo=res.data.url;
+          }
+          catch(err){
+            console.log(err);
+            console.log("Error in uploading image");
+          }
+      }
+      req.body.categories=JSON.parse(req.body.categories);
         const updatedPost = await Post.findByIdAndUpdate(
           req.params.id,
           {

@@ -5,8 +5,26 @@ const bcrypt = require("bcrypt");
 const axios = require('axios').default;
 const common_functions = require('../common_functions');
 
+const multer=require("multer");
+const fs = require('fs-extra');
+
+if (!fs.existsSync("./images")) {
+  fs.mkdirSync("./images");
+}
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "images");
+  },
+  filename: (req, file, cb) => {
+    cb(null, req.body.name);
+  },
+});
+
+const upload = multer({ storage: storage });
+
 //UPDATE
-router.put("/:id", async (req, res) => {
+router.put("/:id", upload.single("file"), async (req, res) => {
   if (req.body.userId === req.params.id) {
     
     try {
@@ -30,6 +48,19 @@ router.put("/:id", async (req, res) => {
       if(common_functions.validateEmail(req.body.email)==null){
         const err=common_functions.getErrorMessage("emailPattern");
         throw err;
+      }
+
+      if(req.body.height){
+          try{
+            const fileInfo = req.file;
+            fileInfo.height = req.body.height;
+            const res=await axios.post(`http://localhost:${process.env.PORT}/api/upload`,fileInfo);
+            req.body.profilePic=res.data.url;
+          }
+          catch(err){
+            console.log(err);
+            console.log("Error in uploading image");
+          }
       }
       const user = await User.findById(req.params.id);
       const updatedUser = await User.findByIdAndUpdate(
